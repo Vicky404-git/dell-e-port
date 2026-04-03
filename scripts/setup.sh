@@ -1,40 +1,21 @@
 #!/bin/bash
 
-echo "🚀 Setting up Dell E-Port (NAS + Immich)"
+echo "📦 Installing dependencies..."
+sudo apt update
+sudo apt install -y docker.io docker-compose samba
 
-# Update system
-
-echo "📦 Updating system..."
-sudo apt update && sudo apt upgrade -y
-
-# Install Docker
-
-echo "🐳 Installing Docker..."
-sudo apt install -y docker.io docker-compose
-sudo systemctl enable docker
-sudo systemctl start docker
-
-# Add user to docker group
-
-sudo usermod -aG docker $USER
-
-# Install Samba
-
-echo "📂 Installing Samba..."
-sudo apt install -y samba
-
-# Create storage
-
-echo "📁 Creating storage directories..."
+echo "📁 Creating storage..."
 sudo mkdir -p /srv/dell-e-port/photos
 sudo chown -R $USER:$USER /srv/dell-e-port
 
-# Copy env
+echo "🐳 Starting Docker..."
+sudo systemctl enable docker
+sudo systemctl start docker
 
-if [ ! -f .env ]; then
-  cp .env.example .env
-  echo "⚠️ Edit .env before running docker!"
-fi
+echo "💾 Creating swap (4GB)..."
+sudo fallocate -l 4G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
 
-echo "✅ Setup complete!"
-echo "👉 Now run: docker compose up -d"
+echo "🚀 Setup complete!"
