@@ -36,7 +36,7 @@ services:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
 
-jellyfin:
+  jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
     environment:
