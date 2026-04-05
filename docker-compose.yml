@@ -53,8 +53,9 @@ jellyfin:
       - /dev/dri:/dev/dri # 🔥 THE GPU PASSTHROUGH. DO NOT REMOVE THIS.
     restart: unless-stopped
 
-  volumes:
-    pgdata:
-    redis-data:
-    jellyfin_config:
+volumes:
+  pgdata:
+  redis-data:
+  jellyfin_config:
+
 
