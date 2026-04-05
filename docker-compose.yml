@@ -7,7 +7,7 @@ services:
     volumes:
       - ${UPLOAD_LOCATION}:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
-      - "mnt/vault2/Photos AND Videos:/usr/src/app/external:ro"
+      - "/mnt/vault2/Photos AND Videos:/usr/src/app/external:ro"
     env_file:
       - .env
     ports:
