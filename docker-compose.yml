@@ -35,6 +35,25 @@ services:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
 
-volumes:
-  pgdata:
-  redis-data:
+jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kolkata
+    volumes:
+      - /mnt/vault2/uploads/videos:/data/movies
+      - /mnt/vault2/uploads/music:/data/music
+      - jellyfin_config:/config
+    ports:
+      - 8096:8096
+    devices:
+      - /dev/dri:/dev/dri # 🔥 THE GPU PASSTHROUGH. DO NOT REMOVE THIS.
+    restart: unless-stopped
+
+  volumes:
+    pgdata:
+    redis-data:
+    jellyfin_config:
+
