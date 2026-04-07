@@ -1,6 +1,16 @@
+# ==============================================================================
+# 🚀 THE GHAJINI VAULT: SELF-HOSTED MICRO-CLOUD
+# Architecture: Debian 13 (Bare-Metal) + Docker + Tailscale Mesh
+# Services: Immich (AI Photo Engine), Jellyfin (Media Transcoding)
+# Deployment: Automated GitOps via SSH post-receive hook
+# ==============================================================================
+
 name: dell-e-port
 
 services:
+  # ----------------------------------------------------------------------------
+  # 📸 PHOTO CLOUD (IMMICH STACK)
+  # ----------------------------------------------------------------------------
   immich-server:
     container_name: immich_server
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
@@ -36,6 +46,9 @@ services:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
 
+  # ----------------------------------------------------------------------------
+  # 🍿 MEDIA EMPIRE (JELLYFIN)
+  # ----------------------------------------------------------------------------
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
@@ -50,12 +63,13 @@ services:
     ports:
       - 8096:8096
     devices:
-      - /dev/dri:/dev/dri # 🔥 THE GPU PASSTHROUGH. DO NOT REMOVE THIS.
+      - /dev/dri:/dev/dri # 🔥 INTEL QUICKSYNC GPU PASSTHROUGH
     restart: unless-stopped
 
+# ------------------------------------------------------------------------------
+# 💾 PERSISTENT STORAGE
+# ------------------------------------------------------------------------------
 volumes:
   pgdata:
   redis-data:
   jellyfin_config:
-
-
