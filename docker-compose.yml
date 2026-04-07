@@ -46,6 +46,17 @@ services:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
 
+  immich-machine-learning:
+    container_name: immich_machine_learning
+    image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
+    volumes:
+      - immich-model-cache:/cache
+    env_file:
+      - .env
+    devices:
+      - /dev/dri/renderD129:/dev/dri/renderD128 # 🔥 AMD RADEON R5 M330 PASSTHROUGH
+    restart: unless-stopped
+
   # ----------------------------------------------------------------------------
   # 🍿 MEDIA EMPIRE (JELLYFIN)
   # ----------------------------------------------------------------------------
@@ -63,7 +74,7 @@ services:
     ports:
       - 8096:8096
     devices:
-      - /dev/dri:/dev/dri # 🔥 INTEL QUICKSYNC GPU PASSTHROUGH
+      - /dev/dri/renderD128:/dev/dri/renderD128 # 🔥 INTEL QUICKSYNC GPU PASSTHROUGH
     restart: unless-stopped
 
 # ------------------------------------------------------------------------------
@@ -73,3 +84,4 @@ volumes:
   pgdata:
   redis-data:
   jellyfin_config:
+  immich-model-cache:
