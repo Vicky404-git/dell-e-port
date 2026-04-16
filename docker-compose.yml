@@ -2,7 +2,7 @@
 # 🚀 THE GHAJINI VAULT: SELF-HOSTED MICRO-CLOUD
 # Architecture: Debian 13 (Bare-Metal) + Docker + Tailscale Mesh
 # Services: Immich (AI Photo Engine), Jellyfin (Media Transcoding)
-# Deployment: Automated GitOps via SSH post-receive hook
+# Deployment: Automated push-to-deploy via SSH post-receive hook
 # ==============================================================================
 
 name: dell-e-port
@@ -17,7 +17,9 @@ services:
     volumes:
       - ${UPLOAD_LOCATION}:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
-      - "/mnt/vault2/Photos And Videos:/usr/src/app/external:ro"
+      # ⚠️ OPTIONAL — your existing photo library for Immich to index (read-only)
+      # Set EXTERNAL_LIBRARY_PATH in .env, or remove this line if you don't need it
+      - ${EXTERNAL_LIBRARY_PATH}:/usr/src/app/external:ro
     env_file:
       - .env
     ports:
@@ -66,13 +68,16 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Asia/Kolkata
+      - TZ=${TIMEZONE:-Asia/Kolkata}
     volumes:
-      - /mnt/vault2/uploads/videos:/data/movies
-      - /mnt/vault2/uploads/music:/data/music
+      # ⚠️ Set these paths in .env or change to your actual media locations
+      - ${JELLYFIN_MOVIES_PATH}:/data/movies
+      - ${JELLYFIN_MUSIC_PATH}:/data/music
       - jellyfin_config:/config
     ports:
       - 8096:8096
+    # ⚠️ HARDWARE SPECIFIC — remove the devices block if you don't have Intel QuickSync
+    # Run: ls /dev/dri/ on your server to find your render device path
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128 # 🔥 INTEL QUICKSYNC GPU PASSTHROUGH
     restart: unless-stopped

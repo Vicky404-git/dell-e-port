@@ -1,0 +1,38 @@
+#!/bin/bash
+# ==============================================================================
+# 🔁 POST-RECEIVE HOOK — Push-to-Deploy Pipeline
+# Place this file at: /srv/dell-e-port.git/hooks/post-receive
+# Make executable: chmod +x hooks/post-receive
+#
+# How it works:
+#   1. You push from your main machine: git push production master
+#   2. Git triggers this hook on the server
+#   3. Hook checks out latest code into the live directory
+#   4. Restarts Docker containers automatically
+# ==============================================================================
+
+REPO_DIR="/srv/dell-e-port.git" # bare repo (git init --bare)
+LIVE_DIR="/srv/dell-e-port"     # where code actually runs
+
+echo "📡 Push received — starting deploy..."
+
+# Step 1: Checkout latest code into live directory
+git --work-tree="$LIVE_DIR" --git-dir="$REPO_DIR" checkout master -f
+if [ $? -ne 0 ]; then
+  echo "❌ Checkout failed. Aborting deploy."
+  exit 1
+fi
+
+echo "✅ Code updated at $LIVE_DIR"
+
+# Step 2: Restart containers
+cd "$LIVE_DIR" || exit 1
+docker compose down
+docker compose up -d
+
+if [ $? -ne 0 ]; then
+  echo "❌ Docker failed to start. Check: docker logs immich_server"
+  exit 1
+fi
+
+echo "🚀 Deploy complete — Matrix is back online!"
