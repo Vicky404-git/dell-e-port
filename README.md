@@ -71,6 +71,7 @@ docker compose up -d
 ```
 
 ### 5. Access your services
+```
 Immich  → http://localhost:2283
 Jellyfin → http://localhost:8096
 ```
